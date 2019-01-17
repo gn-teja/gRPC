@@ -1,4 +1,4 @@
-package grpc;
+package grpc.unary;
 
 import greeting.GreetingServiceGrpc;
 import greeting.Message;

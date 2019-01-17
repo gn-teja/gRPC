@@ -1,50 +1,45 @@
 package grpc;
 
-import greeting.GreetingServiceGrpc;
-import greeting.Message;
-import greeting.Message.GreetingRequest;
-import greeting.Message.GreetingResponse;
+import grpc.unary.GreetingClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.logging.Logger;
+
 public class Client {
 
-    public static void main(String[] args) {
+    private static final Logger logger = Logger.getLogger(Client.class.getName());
 
-        System.out.println("Initializing gRPC grpc.Client ...");
+    public static void main(String[] args) throws InterruptedException {
+
+        logger.info("Initializing gRPC Client ...");
 
         Client main = new Client();
         main.run();
     }
 
-    private void run (){
+    private void run () throws InterruptedException {
 
-        System.out.println("Creating stub");
+        logger.info("Creating stub ...");
 
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("localhost",16002)
+                .forAddress("localhost",16004)
                 .usePlaintext()
                 .build();
 
-        greetingCall(channel);
+        //calling the Greeting Client
+        GreetingClient.greetingCall(channel);
 
 
-        System.out.println("\n Shutting down channel");
-        channel.shutdown();
+        // Shutting down the client
+        shutdown(channel);
+
     }
 
-    private void greetingCall(ManagedChannel channel) {
-        System.out.println("In greet call \n");
+    private void shutdown(ManagedChannel channel) throws InterruptedException {
 
-        GreetingServiceGrpc.GreetingServiceBlockingStub greetingClient = GreetingServiceGrpc.newBlockingStub(channel);
-
-        GreetingRequest request = Message.GreetingRequest.newBuilder()
-                .setName("Gnana Teja")
-                .build();
-
-        GreetingResponse response = greetingClient.greeting(request);
-
-        System.out.println(response.getGreeting());
-
+        Thread.sleep(100);
+        logger.info("Shutting down channel ...");
+        channel.shutdown();
     }
 }
